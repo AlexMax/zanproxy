@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -15,15 +14,15 @@ import (
 
 const banMessage = "You have been banned on suspicion of proxy use.  If you believe this is in error, please contact the administrators."
 
+var config *Config
+
 var ipIntel = NewIpIntel()
 
 var reTimestamp = regexp.MustCompile(`^[0-9:;\[\]]+ `)
 var reConnect = regexp.MustCompile(`Connect \(v[0-9.]+\): ([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)`)
 
 func addBan(ip string, score float64) error {
-	fmt.Printf("addBan(%s, %f)\n", ip, score)
-
-	file, err := os.OpenFile("banlist.txt", os.O_RDWR|os.O_APPEND|os.O_CREATE, 0644)
+	file, err := os.OpenFile(config.Banlist, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0644)
 	if err != nil {
 		return err
 	}
@@ -40,7 +39,7 @@ func addBan(ip string, score float64) error {
 		}
 
 		if strings.HasPrefix(line, ip) {
-			// Ban exists, do nothing.
+			log.Printf("%s is greater than or equal to MinScore, already exists in banlist. (%f >= %f)", ip, score, config.MinScore)
 			return nil
 		}
 	}
@@ -51,6 +50,7 @@ func addBan(ip string, score float64) error {
 		return err
 	}
 
+	log.Printf("%s is greater than or equal to MinScore, added to banlist. (%f >= %f)", ip, score, config.MinScore)
 	return nil
 }
 
@@ -82,6 +82,12 @@ func parseTail(t *tail.Tail) {
 			continue
 		}
 
+		// Don't add to banlist unless we meet the minimum score.
+		if score < config.MinScore {
+			log.Printf("%s is less than MinScore. (%f < %f)", ip, score, config.MinScore)
+			continue
+		}
+
 		err = addBan(ip, score)
 		if err != nil {
 			log.Printf("addBan error: %#v", err)
@@ -91,12 +97,19 @@ func parseTail(t *tail.Tail) {
 }
 
 func main() {
-	flag.Parse()
-	if len(flag.Args()) == 0 {
-		log.Fatal("no arguments")
+	if len(os.Args) != 2 {
+		log.Print("Missing parameter - config file")
+		os.Exit(1)
 	}
 
-	for _, arg := range flag.Args() {
+	var err error
+	config, err = NewConfig(os.Args[1])
+	if err != nil {
+		log.Print(err.Error())
+		os.Exit(1)
+	}
+
+	for _, arg := range config.Logfiles {
 		t, err := tail.TailFile(arg, tail.Config{
 			Follow: true,
 			Location: &tail.SeekInfo{
