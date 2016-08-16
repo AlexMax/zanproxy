@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -105,24 +106,36 @@ func main() {
 	var err error
 	config, err = NewConfig(os.Args[1])
 	if err != nil {
-		log.Print(err.Error())
+		log.Fatal(err)
 		os.Exit(1)
 	}
 
-	for _, arg := range config.Logfiles {
-		t, err := tail.TailFile(arg, tail.Config{
-			Follow: true,
-			Location: &tail.SeekInfo{
-				Offset: 0,
-				Whence: os.SEEK_END,
-			},
-			MustExist: true,
-		})
+	for _, globarg := range config.Logfiles {
+		matches, err := filepath.Glob(globarg)
 		if err != nil {
 			log.Fatal(err)
+			os.Exit(1)
+		}
+		if matches == nil {
+			log.Fatalf("No matches for path %s", globarg)
+			os.Exit(1)
 		}
 
-		go parseTail(t)
+		for _, arg := range matches {
+			t, err := tail.TailFile(arg, tail.Config{
+				Follow: true,
+				Location: &tail.SeekInfo{
+					Offset: 0,
+					Whence: os.SEEK_END,
+				},
+				MustExist: true,
+			})
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			go parseTail(t)
+		}
 	}
 
 	select {}
