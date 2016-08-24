@@ -27,6 +27,7 @@ import (
 // Config contains the configuration for the program.
 type Config struct {
 	Banlist  string
+	Email    string
 	Logfiles []string
 	MinScore float64
 }
@@ -43,6 +44,11 @@ func NewConfig(filename string) (*Config, error) {
 	// Ensure Banlist exists
 	if !meta.IsDefined("Banlist") {
 		return nil, errors.New("Config: must define Banlist")
+	}
+
+	// Ensure Email exists
+	if !meta.IsDefined("Email") {
+		return nil, errors.New("Config: must define Email")
 	}
 
 	// Ensure Logfiles exists

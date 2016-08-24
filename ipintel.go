@@ -39,11 +39,11 @@ type IPIntel struct {
 	timeout time.Duration
 }
 
-func getScore(addr string) (float64, error) {
+func getScore(addr string, contact string) (float64, error) {
 	v := url.Values{}
 
 	v.Set("ip", addr)
-	v.Set("contact", "alexmax2742@gmail.com")
+	v.Set("contact", contact)
 	v.Set("flags", "f")
 
 	res, err := http.Get("http://check.getipintel.net/check.php?" + v.Encode())
@@ -79,14 +79,14 @@ func NewIPIntel() *IPIntel {
 //
 // The score is on a scale from 0.0 to 1.0.  If the score was retrieved
 // from the cache, the second return value will return true.
-func (intel *IPIntel) GetScore(addr string) (float64, bool, error) {
+func (intel *IPIntel) GetScore(addr string, contact string) (float64, bool, error) {
 	intel.mutex.RLock()
 	cache, ok := intel.cache[addr]
 	intel.mutex.RUnlock()
 
 	if !ok || cache.touched.Add(intel.timeout).Before(time.Now()) {
 		// Grab the score from getIPintel.
-		score, err := getScore(addr)
+		score, err := getScore(addr, contact)
 		if err != nil {
 			return 0.0, false, err
 		}

@@ -95,7 +95,7 @@ func parseTail(t *tail.Tail) {
 		ip := cGroups[1]
 
 		// Get IP Intel on given IP.
-		score, _, err := ipIntel.GetScore(ip)
+		score, _, err := ipIntel.GetScore(ip, config.Email)
 		if err != nil {
 			log.Printf("ipIntel error: %#v", err)
 			continue

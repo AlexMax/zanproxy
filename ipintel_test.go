@@ -7,7 +7,7 @@ func TestGetScore(t *testing.T) {
 	intel := NewIPIntel()
 
 	// Test request
-	score, cached, err := intel.GetScore("82.183.48.49")
+	score, cached, err := intel.GetScore("82.183.48.49", "alexmax@example.com")
 	if err != nil {
 		t.Errorf("Unexpected error %#v.", err)
 	}
@@ -16,7 +16,7 @@ func TestGetScore(t *testing.T) {
 	}
 
 	// Test cached request
-	cscore, cached, err := intel.GetScore("82.183.48.49")
+	cscore, cached, err := intel.GetScore("82.183.48.49", "alexmax2742@gmail.com")
 	if err != nil {
 		t.Errorf("Unexpected error %#v.", err)
 	}
