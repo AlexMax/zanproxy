@@ -4,7 +4,7 @@ import "testing"
 
 func TestGetScore(t *testing.T) {
 	// New IpIntel
-	intel := NewIpIntel()
+	intel := NewIPIntel()
 
 	// Test request
 	score, cached, err := intel.GetScore("82.183.48.49")

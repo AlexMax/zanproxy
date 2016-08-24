@@ -1,3 +1,21 @@
+/*
+ *  zanproxy: a proxy detector for Zandronum
+ *  Copyright (C) 2016  Alex Mayfield <alexmax2742@gmail.com>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package main
 
 import (
@@ -14,7 +32,8 @@ type ipCacheEntry struct {
 	touched time.Time
 }
 
-type IpIntel struct {
+// IPIntel is a cache of results from getIPIntel.
+type IPIntel struct {
 	cache   map[string]ipCacheEntry
 	mutex   sync.RWMutex
 	timeout time.Duration
@@ -46,8 +65,9 @@ func getScore(addr string) (float64, error) {
 	return score, nil
 }
 
-func NewIpIntel() *IpIntel {
-	ipintel := &IpIntel{
+// NewIPIntel creates a new instance of IPIntel.
+func NewIPIntel() *IPIntel {
+	ipintel := &IPIntel{
 		cache:   make(map[string]ipCacheEntry),
 		timeout: time.Minute * 30,
 	}
@@ -55,17 +75,23 @@ func NewIpIntel() *IpIntel {
 	return ipintel
 }
 
-func (intel *IpIntel) GetScore(addr string) (float64, bool, error) {
+// GetScore retrieves a score from getIPintel.
+//
+// The score is on a scale from 0.0 to 1.0.  If the score was retrieved
+// from the cache, the second return value will return true.
+func (intel *IPIntel) GetScore(addr string) (float64, bool, error) {
 	intel.mutex.RLock()
 	cache, ok := intel.cache[addr]
 	intel.mutex.RUnlock()
 
 	if !ok || cache.touched.Add(intel.timeout).Before(time.Now()) {
+		// Grab the score from getIPintel.
 		score, err := getScore(addr)
 		if err != nil {
 			return 0.0, false, err
 		}
 
+		// Save score to the cache.
 		intel.mutex.Lock()
 		defer intel.mutex.Unlock()
 		intel.cache[addr] = ipCacheEntry{
@@ -73,12 +99,14 @@ func (intel *IpIntel) GetScore(addr string) (float64, bool, error) {
 			touched: time.Now(),
 		}
 
+		// Return fresh score.
 		return score, false, nil
-	} else {
-		intel.mutex.Lock()
-		defer intel.mutex.Unlock()
-		cache.touched = time.Now()
-
-		return cache.score, true, nil
 	}
+
+	// Return cached value
+	intel.mutex.Lock()
+	defer intel.mutex.Unlock()
+	cache.touched = time.Now()
+
+	return cache.score, true, nil
 }
