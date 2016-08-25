@@ -26,10 +26,11 @@ import (
 
 // Config contains the configuration for the program.
 type Config struct {
-	Banlist  string
-	Email    string
-	Logfiles []string
-	MinScore float64
+	Banlist    string
+	Email      string
+	Logfiles   []string
+	MinScore   float64
+	BanMessage string
 }
 
 // NewConfig creates a new instance of Config from a configuration file.
@@ -59,6 +60,11 @@ func NewConfig(filename string) (*Config, error) {
 	// Ensure MinScore exists
 	if !meta.IsDefined("MinScore") {
 		return nil, errors.New("Config: must define MinScore")
+	}
+
+	// Ensure BanMessage exists
+	if !meta.IsDefined("BanMessage") {
+		return nil, errors.New("Config: must define BanMessage")
 	}
 
 	return config, nil
