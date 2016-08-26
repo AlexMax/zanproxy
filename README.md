@@ -18,7 +18,7 @@ To use this program, you first need a [TOML format](https://github.com/toml-lang
     Email = "alexmax@example.com"
     Logfiles = ["/opt/zandronum/log/*.log"]
     MinScore = 1.0
-    BanMesssage = "You have been banned on suspicion of proxy use.  If you believe this is in error, please contact the administrators."
+    BanMessage = "You have been banned on suspicion of proxy use.  If you believe this is in error, please contact the administrators."
 
 ### Banlist
 **Banlist** is the path to the banlist that your Zandronum servers use.  The program will automatically append any bans to the bottom of this file, first checking for duplicates.  The program should have write access to this file.
