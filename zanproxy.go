@@ -31,8 +31,6 @@ import (
 	"github.com/hpcloud/tail"
 )
 
-const banMessage = "You have been banned on suspicion of proxy use.  If you believe this is in error, please contact the administrators."
-
 var config *Config
 
 var ipIntel = NewIPIntel()
@@ -64,7 +62,7 @@ func addBan(ip string, score float64) error {
 	}
 
 	// Ban does not exist, append it.
-	_, err = file.WriteString(fmt.Sprintf("\n%s:%s", ip, banMessage))
+	_, err = file.WriteString(fmt.Sprintf("\n%s:%s", ip, config.BanMessage))
 	if err != nil {
 		return err
 	}
