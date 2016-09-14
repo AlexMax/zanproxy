@@ -64,7 +64,7 @@ func addBan(ip string, score float64) error {
 	}
 
 	// Ban does not exist, append it.
-	_, err = file.WriteString(fmt.Sprintf("%s:%s\n", ip, banMessage))
+	_, err = file.WriteString(fmt.Sprintf("\n%s:%s", ip, banMessage))
 	if err != nil {
 		return err
 	}
