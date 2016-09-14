@@ -18,7 +18,6 @@ To use this program, you first need a [TOML format](https://github.com/toml-lang
     Email = "alexmax@example.com"
     Logfiles = ["/opt/zandronum/log/*.log"]
     MinScore = 1.0
-    BanMessage = "You have been banned on suspicion of proxy use.  If you believe this is in error, please contact the administrators."
 
 ### Banlist
 **Banlist** is the path to the banlist that your Zandronum servers use.  The program will automatically append any bans to the bottom of this file, first checking for duplicates.  The program should have write access to this file.
@@ -33,7 +32,7 @@ To use this program, you first need a [TOML format](https://github.com/toml-lang
 **MinScore** is a score between 0.0 and 1.0 that the program will ban proxies greater than or equal to this number.  Each IP is rated on a scale from 0.0 to 1.0: scores of 1.0 are confirmed proxies, anything less is a likelyhood guesstimate based on a machine learning algorithm.  If you want to be safe, set this to 1.0.  **Use extreme caution when setting this to anything less than 0.99.**  I would recommend starting at 1.0 and then keeping an eye on the output of this program to see if any of your regular players would get caught by your desired score.  For more information on how this score is determined, see [this website](http://getipintel.net/).
 
 ### BanMessage
-**BanMessage** is the message a ban will be writen to the Banlist with.  The message will be visible to the suspected player when they get kicked out of the server and if they try to reconnect.
+**BanMessage** is the message a ban will be writen to the Banlist with.  The message will be visible to the suspected player when they get kicked out of the server and if they try to reconnect.  **This parameter is optional.**
 
 Use
 ---
