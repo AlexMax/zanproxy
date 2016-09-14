@@ -38,7 +38,7 @@ Use
 ---
 To run this program, simply pass the path to the configuration file.  It is also recommended that you pipe standard output to a file, as detailed logs are kept of every IP examined, their score, and any action taken.
 
-    $ ./zanproxy zanproxy.cfg > zanproxy.log
+    $ ./zanproxy zanproxy.cfg 2>> zanproxy.log
 
 License
 -------
