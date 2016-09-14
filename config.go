@@ -62,9 +62,9 @@ func NewConfig(filename string) (*Config, error) {
 		return nil, errors.New("Config: must define MinScore")
 	}
 
-	// Ensure BanMessage exists
+	// Ensure BanMessage exists, else use a sane default
 	if !meta.IsDefined("BanMessage") {
-		return nil, errors.New("Config: must define BanMessage")
+		config.BanMessage = "You have been banned on suspicion of proxy use.  If you believe this is in error, please contact the administrators."
 	}
 
 	return config, nil
