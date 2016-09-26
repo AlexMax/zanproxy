@@ -43,3 +43,7 @@ To run this program, simply pass the path to the configuration file.  It is also
 License
 -------
 This program is licensed under the [GNU Affero General Public License v3](https://www.gnu.org/licenses/agpl-3.0.en.html).  If this license is not acceptable to you for some reason, please let me know and perhaps we can work something out.
+
+Attribution
+-----------
+This program uses [IP Intelligence](http://getipintel.net/) for scoring IP addresses.  Thank you to the developer and maintainer of this invaluable service.
